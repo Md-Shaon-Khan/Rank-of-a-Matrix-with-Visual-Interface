@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Matrix Rank Calculator</title>
+<link rel="stylesheet" href="/static/style.css">
+
+</head>
+<body>
+
+<div class="container">
+  <h1>Matrix Rank Calculator</h1>
+
+  <textarea id="matrixInput" placeholder="Enter each matrix row on a new line, separate elements by spaces or commas"></textarea>
+  <button id="calculateBtn">Calculate Rank</button>
+
+  <div id="rankResult"></div>
+</div>
+
+
+
+
+<script>
+  const btn = document.getElementById('calculateBtn');
+  const input = document.getElementById('matrixInput');
+  const result = document.getElementById('rankResult');
+
+  btn.addEventListener('click', async () => {
+    const text = input.value.trim();
+    if (!text) {
+      result.textContent = 'Please enter a matrix first.';
+      result.style.color = 'red';
+      return;
+    }
+
+    result.textContent = 'Calculating...';
+    result.style.color = 'black';
+
+    const formData = new FormData();
+    formData.append('matrix_text', text);
+
+    try {
+      const resp = await fetch('/api/rank', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await resp.json();
+      if (resp.ok) {
+        result.textContent = `Matrix rank = ${data.rank}`;
+        result.style.color = 'green';
+      } else {
+        result.textContent = `Error: ${data.error}`;
+        result.style.color = 'red';
+      }
+    } catch (err) {
+      result.textContent = 'Network error: ' + err.message;
+      result.style.color = 'red';
+    }
+  });
+</script>
+
+</body>
+</html>
